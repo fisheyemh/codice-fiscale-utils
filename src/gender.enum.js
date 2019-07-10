@@ -1,6 +1,6 @@
 const GENDERS = {
-    M: 0,
-    F: 40
+    'M': 0,
+    'F': 40
 };
 
 /**
@@ -8,18 +8,26 @@ const GENDERS = {
  * @memberof CodiceFiscaleUtils
  */
 module.exports = Object.freeze(new Proxy(GENDERS, {
-    get(receiver, name) {
-        const index = typeof name === 'string' ? parseInt(name) : name;
-        const values = this.toArray.apply(receiver);
-        if (typeof index === 'number' && ((index >= 0 && index <= 31) || (index >= 40 && index <= 71))) {
-            return values[Math.floor(index/40)];
+    get (receiver, name) {
+
+        const index = typeof name === 'string' ? parseInt(name) : name,
+            values = this.toArray.apply(receiver);
+        if (typeof index === 'number' && (index >= 0 && index <= 31 || index >= 40 && index <= 71)) {
+
+            return values[Math.floor(index / 40)];
+
         }
         if (typeof this[name] === 'function') {
+
             return (...args) => this[name].apply(receiver, args);
+
         }
         return this[name] || receiver[name];
+
     },
-    toArray(){
+    toArray () {
+
         return Object.keys(this);
+
     }
 }));

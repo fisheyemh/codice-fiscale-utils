@@ -36,20 +36,28 @@ class CheckDigitizer {
      * @generator
      * @yields {number} character value odd/even
      */
-    static* evaluateChar(partialCF) {
-        for(let index in partialCF){
-            const char = partialCF[index].toUpperCase();
-            const isNumber = (/^\d/).test(char);
-            //Odd/Even are shifted/swapped (array starts from 0, 'Agenzia delle Entrate' documentation counts the string from 1)
-            if (index%2) {
-                //Odd positions
+    static *evaluateChar (partialCF) {
+
+        for (const index in partialCF) {
+
+            const char = partialCF[index].toUpperCase(),
+                isNumber = (/^\d/).test(char);
+            // Odd/Even are shifted/swapped (array starts from 0, 'Agenzia delle Entrate' documentation counts the string from 1)
+            if (index % 2) {
+
+                // Odd positions
                 yield char.charCodeAt(0) - (isNumber ? 48 : 65);
+
             } else {
-                //Even positions
+
+                // Even positions
                 yield CONTROL_CODE_IN[isNumber ? String.fromCharCode(parseInt(char) + 65) : char];
+
             }
+
         }
         return 0;
+
     }
 
     /**
@@ -57,11 +65,18 @@ class CheckDigitizer {
      * @param {string} partialCF Partial Fiscal Code to evaluate to produce last character
      * @returns {char} 16th CF char
      */
-    static checkDigit(partialCF) {
+    static checkDigit (partialCF) {
+
         let partialCfValue = 0;
-        for (let charValue of this.evaluateChar(partialCF)) partialCfValue += charValue;
-        return String.fromCharCode((partialCfValue%26) + 65);
+        for (const charValue of this.evaluateChar(partialCF)) {
+
+            partialCfValue += charValue;
+
+        }
+        return String.fromCharCode(partialCfValue % 26 + 65);
+
     }
+
 }
 
 module.exports = CheckDigitizer;

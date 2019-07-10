@@ -1,7 +1,7 @@
 
-const VALIDATOR = require('./validator.const');
-const Parser = require('./parser');
-const Omocode = require('./omocode.enum');
+const Omocode = require('./omocode.enum'),
+    Parser = require('./parser'),
+    VALIDATOR = require('./validator.const');
 
 /**
  * @class Validator
@@ -15,12 +15,16 @@ class Validator {
      * @returns {RegExp} CF Surname matcher
      * @memberof CodiceFiscaleUtils.Validator
      */
-    static cfSurname(surname) {
+    static cfSurname (surname) {
+
         let matcher = VALIDATOR.NAME_MATCHER;
         if (surname) {
+
             matcher = Parser.surnameToCf(surname) || matcher;
+
         }
-        return new RegExp(`^${matcher}$`, 'i');
+        return new RegExp(`^${matcher}$`, 'iu');
+
     }
 
     /**
@@ -29,12 +33,16 @@ class Validator {
      * @returns {RegExp} CF name matcher
      * @memberof CodiceFiscaleUtils.Validator
      */
-    static cfName(name) {
+    static cfName (name) {
+
         let matcher = VALIDATOR.NAME_MATCHER;
         if (name) {
+
             matcher = Parser.nameToCf(name) || matcher;
+
         }
-        return new RegExp(`^${matcher}$`, 'i');
+        return new RegExp(`^${matcher}$`, 'iu');
+
     }
 
     /**
@@ -43,15 +51,24 @@ class Validator {
      * @returns {RegExp} CF year matcher
      * @memberof CodiceFiscaleUtils.Validator
      */
-    static cfYear(year) {
+    static cfYear (year) {
+
         let matcher = VALIDATOR.YEAR_MATCHER;
         if (year) {
+
             const parsedYear = Parser.yearToCf(year);
             if (parsedYear) {
-                matcher = parsedYear.replace(/\d/g, n => `[${n}${Omocode[n]}]`);
+
+                matcher = parsedYear.replace(
+                    /\d/gu,
+                    (yearNum) => `[${yearNum}${Omocode[yearNum]}]`
+                );
+
             }
+
         }
-        return new RegExp(`^${matcher}$`, 'i');
+        return new RegExp(`^${matcher}$`, 'iu');
+
     }
 
     /**
@@ -60,12 +77,16 @@ class Validator {
      * @returns {RegExp} CF month matcher
      * @memberof CodiceFiscaleUtils.Validator
      */
-    static cfMonth(month) {
+    static cfMonth (month) {
+
         let matcher = VALIDATOR.MONTH_MATCHER;
         if (month) {
+
             matcher = Parser.monthToCf(month) || matcher;
+
         }
-        return new RegExp(`^${matcher}$`, 'i');
+        return new RegExp(`^${matcher}$`, 'iu');
+
     }
 
     /**
@@ -74,18 +95,32 @@ class Validator {
      * @returns {RegExp} CF day matcher
      * @memberof CodiceFiscaleUtils.Validator
      */
-    static cfDay(day) {
+    static cfDay (day) {
+
         let matcher = VALIDATOR.DAY_MATCHER;
         if (day) {
+
             const parsedDayM = Parser.dayGenderToCf(day, 'M');
             if (parsedDayM) {
-                const matcherM = parsedDayM.replace(/\d/g, n => `[${n}${Omocode[n]}]`);
-                const matcherF = Parser.dayGenderToCf(day, 'F').replace(/\d/g, n => `[${n}${Omocode[n]}]`);
+
+                const matcherF = Parser.dayGenderToCf(day, 'F').replace(
+                        /\d/gu,
+                        (dayNum) => `[${dayNum}${Omocode[dayNum]}]`
+                    ),
+                    matcherM = parsedDayM.replace(
+                        /\d/gu,
+                        (dayNum) => `[${dayNum}${Omocode[dayNum]}]`
+                    );
+
                 matcher = `(?:${matcherM})|(?:${matcherF})`;
+
             }
+
         }
-        return new RegExp(`^${matcher}$`, 'i');
+        return new RegExp(`^${matcher}$`, 'iu');
+
     }
+
 }
 
 module.exports = Validator;

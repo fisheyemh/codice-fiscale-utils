@@ -1,49 +1,60 @@
-const CITIES_COUNTRIES = require('./asset/cities-countries.json');
-const moment = require('moment');
+const CITIES_COUNTRIES = require('./asset/cities-countries.json'),
+    moment = require('moment');
 
-class Belfiore{
+class Belfiore {
+
+
     /**
-     * 
+     *
      * @param {Object} param Static json
      * @param {Array<Array<Object>>} param.data
      * @param {Array<Array<Object>>} param.licenses
      * @memberof Belfiore
      */
-    constructor({ data, licenses, activeDate, codeMatcher, province }) {
+    constructor ({data, licenses, activeDate, codeMatcher, province}) {
+
         if (codeMatcher && province) {
+
             throw new Error('Both codeMatcher and province were provided to Bolfiore, only one is allowed');
+
         }
-        const hiddenValueConf = value => ({
+        const hiddenValueConf = (value) => ({
             value,
-            enumerable: false,
-            configurable: false,
-            writable: false
+            'enumerable': false,
+            'configurable': false,
+            'writable': false
         });
 
         Object.defineProperties(this, {
-            _data: hiddenValueConf(data),
-            _licenses: hiddenValueConf(licenses),
-            _activeDate: hiddenValueConf(activeDate),
-            _codeMatcher: hiddenValueConf(codeMatcher),
-            _province: hiddenValueConf(province)
+            '$data': hiddenValueConf(data),
+            '$licenses': hiddenValueConf(licenses),
+            '$activeDate': hiddenValueConf(activeDate),
+            '$codeMatcher': hiddenValueConf(codeMatcher),
+            '$province': hiddenValueConf(province)
         });
         return new Proxy(this, this.constructor);
+
     }
 
     /**
      * @returns {Array<Object>} List of places
      * @memberof Belfiore
      */
-    toArray() {
-        return this._data
-            .map(resource => (Array.from(new Array(resource.belfioreCode.length / 3), (e, i) => this.constructor.locationByIndex(resource, i, {
-                activeDate: this._activeDate,
-                codeMatcher: this._codeMatcher,
-                province: this._province,
-                licenses: this._licenses
-            }))))
-            .reduce((a, b) => a.concat(b))
-            .filter(e => !!e);
+    toArray () {
+        const ctr = this.constructor;
+        return this.$data.
+            map((resource) => Array.from(
+                new Array(resource.belfioreCode.length / 3),
+                (value, index) => ctr.locationByIndex(resource, index, {
+                    'activeDate': this.$activeDate,
+                    'codeMatcher': this.$codeMatcher,
+                    'province': this.$province,
+                    'licenses': this.$licenses
+                })
+            )).
+            reduce((previousValue, currentValue) => previousValue.concat(currentValue)).
+            filter((value) => Boolean(value));
+
     }
 
     /**
@@ -52,61 +63,81 @@ class Belfiore{
      * @return {Array<Object>}
      * @memberof Belfiore
      */
-    searchByName(name) {
+    searchByName (name) {
+
         if (!name || typeof name !== 'string') {
+
             return null;
+
         }
-        let output = [];
-        for (let g = 0; g < this._data.length; g++) {
-            const resourceData = this._data[g];
-            const indexer = this.constructor.indexByName(resourceData.name, name);
-            for (let index of indexer) {
+        const output = [];
+        for (let g = 0; g < this.$data.length; g++) {
+
+            const resourceData = this.$data[g],
+                indexer = this.constructor.indexByName(resourceData.name, name);
+            for (const index of indexer) {
+
                 if (index >= 0) {
-                    const roundItem = this.constructor.locationByIndex(resourceData, index, {
-                        activeDate: this._activeDate,
-                        codeMatcher: this._codeMatcher,
-                        province: this._province,
-                        licenses: this._licenses
+
+                    const roundItem = ctr.locationByIndex(resourceData, index, {
+                        'activeDate': this.$activeDate,
+                        'codeMatcher': this.$codeMatcher,
+                        'province': this.$province,
+                        'licenses': this.$licenses
                     });
                     if (roundItem) {
+
                         output.push(roundItem);
+
                     }
+
                 }
+
             }
+
         }
         return output;
+
     }
 
     /**
      * Find place matching given name, retuns place object if provided name match only 1 result
      * @param {string} name Place name
-     * @return {Object|null
+     * @return {Object|null}
      * @memberof BelfioreGenericList
      * @memberof Belfiore
      */
-    findByName(name) {
+    findByName (name) {
+
         if (!name || typeof name !== 'string') {
-            return null;
+
+            throw new Error('[Belfiore.findByName] Provided name is not a string or it\'s empty');
+
         }
-        const matcher = new RegExp(`^${name}$`, 'i');
-        for (let g = 0; g < this._data.length; g++) {
-            const resourceData = this._data[g];
-            const indexer = this.constructor.indexByName(resourceData.name, matcher);
-            for (let index of indexer) {
-                if (index >= 0) {
-                    const roundItem = this.constructor.locationByIndex(resourceData, index, {
-                        activeDate: this._activeDate,
-                        codeMatcher: this._codeMatcher,
-                        province: this._province,
-                        licenses: this._licenses
-                    });
-                    if (roundItem) {
-                        return roundItem;
-                    }
+        const matcher = new RegExp(`^${name}$`, 'iu'),
+            ctr = this.constructor;
+        for (const resourceData of this.$data) {
+
+            const indexer = ctr.indexByName(resourceData.name, matcher);
+            for (const index of indexer) {
+
+                const roundItem = ctr.locationByIndex(resourceData, index, {
+                    'activeDate': this.$activeDate,
+                    'codeMatcher': this.$codeMatcher,
+                    'province': this.$province,
+                    'licenses': this.$licenses
+                });
+                if (roundItem) {
+
+                    return roundItem;
+
                 }
+
             }
+
         }
         return null;
+
     }
 
     /**
@@ -114,32 +145,39 @@ class Belfiore{
      * @param {string|Date|Moment|Array<number>} [date = moment()] Target date to filter places active only for the given date
      * @returns {Belfiore}
      */
-    active(date = moment()) {
-        const { _data, _licenses, _codeMatcher, _province } = this;
+    active (date = moment()) {
+
+        const {$data, $licenses, $codeMatcher, $province} = this;
         return new Belfiore({
-            data: _data,
-            licenses: _licenses,
-            activeDate: moment(date),
-            province: _province,
-            codeMatcher: _codeMatcher
+            'data': $data,
+            'licenses': $licenses,
+            'activeDate': moment(date),
+            'province': $province,
+            'codeMatcher': $codeMatcher
         });
+
     }
 
     /**
      * Returns a Belfiore instance filtered by the given province
-     * @param {string} code 
+     * @param {string} code
+     * @returns {Belfiore}
      */
-    byProvince(code) {
-        if (!(typeof code === 'string' && (/^[A-Z]{2}$/).test(code))) {
+    byProvince (code) {
+
+        if (!(typeof code === 'string' && (/^[A-Z]{2}$/u).test(code))) {
+
             return;
+
         }
-        const { _data, _licenses, _activeDate } = this;
+        const {$data, $licenses, $activeDate} = this;
         return new Belfiore({
-            data: _data,
-            licenses: _licenses,
-            activeDate: _activeDate,
-            province: code
+            'data': $data,
+            'licenses': $licenses,
+            'activeDate': $activeDate,
+            'province': code
         });
+
     }
 
     /**
@@ -147,14 +185,16 @@ class Belfiore{
      * @readonly
      * @returns {Belfiore}
      */
-    get cities() {
-        const { _data, _licenses, _activeDate } = this;
+    get cities () {
+
+        const {$data, $licenses, $activeDate} = this;
         return new Belfiore({
-            data: _data,
-            licenses: _licenses,
-            activeDate: _activeDate,
-            codeMatcher: /^[A-Y]/
+            'data': $data,
+            'licenses': $licenses,
+            'activeDate': $activeDate,
+            'codeMatcher': /^[A-Y]/
         });
+
     }
 
     /**
@@ -162,78 +202,99 @@ class Belfiore{
      * @readonly
      * @returns {Belfiore}
      */
-    get countries() {
-        const { _data, _licenses, _activeDate } = this;
+    get countries () {
+
+        const {$data, $licenses, $activeDate} = this;
         return new Belfiore({
-            data: _data,
-            licenses: _licenses,
-            activeDate: _activeDate,
-            codeMatcher: /^Z/
+            'data': $data,
+            'licenses': $licenses,
+            'activeDate': $activeDate,
+            'codeMatcher': /^Z/
         });
+
     }
 
     /**
      * Get Proxy
      * @param {Object} resource target resource
      * @param {string|number|Symbol} name property name to proxy
-     * @return {*} 
+     * @return {*}
      * @memberof Belfiore
      */
     static get (resource, paramName) {
-        if (typeof paramName  === 'string' && (/^[A-Z]\d{3}$/).test(paramName)){
-            const base32name = this.belfioreToInt(paramName).toString(32).padStart(3, '0');
-            for (let g = 0; g < resource._data.length; g++) {
-                const resourceData = resource._data[g];
-                const index = this.binaryfindIndex(resourceData.belfioreCode, base32name);
+
+        if (typeof paramName === 'string' && (/^[A-Z]\d{3}$/).test(paramName)) {
+
+            const base32name = this.belfioreToInt(paramName).toString(32).
+                padStart(3, '0');
+            for (let g = 0; g < resource.$data.length; g++) {
+
+                const resourceData = resource.$data[g],
+                    index = this.binaryfindIndex(resourceData.belfioreCode, base32name);
                 if (index >= 0) {
+
                     return this.locationByIndex(resourceData, index, {
-                        activeDate: resource._activeDate,
-                        codeMatcher: resource._codeMatcher,
-                        province: resource._province,
-                        licenses: resource._licenses
+                        'activeDate': resource.$activeDate,
+                        'codeMatcher': resource.$codeMatcher,
+                        'province': resource.$province,
+                        'licenses': resource.$licenses
                     });
+
                 }
+
             }
+
         }
 
         if (
-            (
-                (resource._codeMatcher || resource._province) &&
-                ['cities', 'countries'].includes(paramName)
-            ) ||
-            (
+
+            (resource.$codeMatcher || resource.$province) &&
+                [
+                    'cities',
+                    'countries'
+                ].includes(paramName) ||
+
                 paramName === 'byProvince' &&
-                (resource._codeMatcher.test('Z000') || resource._province)
-            )
+                (resource.$codeMatcher.test('Z000') || resource.$province)
+
         ) {
+
             return;
+
         }
 
         return resource[paramName];
+
     }
 
     /**
      * Binary find Index (works ONLY in sorted arrays)
-     * @param {string} text 
+     * @param {string} text
      * @param {string} value
      * @param {number} start
      * @param {number} end
      * @param {number} step
-     * @returns {number} Found value Index, -1 if not found 
+     * @returns {number} Found value Index, -1 if not found
      * @memberof Belfiore
      */
-    static binaryfindIndex(text, value, start = 0, end = (text || '').length -1) {
+    static binaryfindIndex (text, value, start = 0, end = (text || '').length - 1) {
+
         const currentLength = end - start + 1;
-        if (start > end || (currentLength % value.length)) {
+        if (start > end || currentLength % value.length) {
+
             return -1;
+
         }
-        const targetIndex = start + Math.floor(currentLength/(2*value.length))*value.length;
-        const targetValure = text.substr(targetIndex, value.length);
+        const targetIndex = start + Math.floor(currentLength / (2 * value.length)) * value.length,
+            targetValure = text.substr(targetIndex, value.length);
         if (targetValure === value) {
-            return Math.ceil(((targetIndex + 1) / value.length)) -1;
+
+            return Math.ceil((targetIndex + 1) / value.length) - 1;
+
         }
         const goAhead = value > targetValure;
-        return this.binaryfindIndex(text, value, goAhead ? (targetIndex + value.length) : start, goAhead ? end : (targetIndex - 1));
+        return this.binaryfindIndex(text, value, goAhead ? targetIndex + value.length : start, goAhead ? end : targetIndex - 1);
+
     }
 
     /**
@@ -242,8 +303,10 @@ class Belfiore{
      * @return {number} Int version of belfiore code
      * @memberof Belfiore
      */
-    static belfioreToInt(code) {
-        return ((code.charCodeAt()-65)*10**3) + parseInt(code.substr(1));
+    static belfioreToInt (code) {
+
+        return (code.charCodeAt() - 65) * 10 ** 3 + parseInt(code.substr(1));
+
     }
 
     /**
@@ -252,8 +315,11 @@ class Belfiore{
      * @return {string} Standard belfiore code
      * @memberof Belfiore
      */
-    static belfioreFromInt(code) {
-        return `${String.fromCharCode(Math.floor(code / 10**3) + 65)}${code.toString().substr(-3).padStart(3, '0')}`;
+    static belfioreFromInt (code) {
+
+        return `${String.fromCharCode(Math.floor(code / 10 ** 3) + 65)}${code.toString().substr(-3).
+            padStart(3, '0')}`;
+
     }
 
     /**
@@ -262,23 +328,29 @@ class Belfiore{
      * @returns {Moment} Moment instance date
      * @memberof Belfiore
      */
-    static decodeDate(base32daysFrom1861) {
-        return moment('1861-01-01').add(parseInt(base32daysFrom1861, 32) ,'days');
+    static decodeDate (base32daysFrom1861) {
+
+        return moment('1861-01-01').add(parseInt(base32daysFrom1861, 32), 'days');
+
     }
 
     /**
      * Retrieve string at index posizion
      * @param {string} list concatenation of names
      * @param {number} index target name index
-     * @returns {string} index-th string 
+     * @returns {string} index-th string
      * @memberof Belfiore
      */
-    static nameByIndex(list, index, startIndex = 0) {
+    static nameByIndex (list, index, startIndex = 0) {
+
         const endIndex = list.indexOf('|', startIndex);
         if (index > 0) {
-            return this.nameByIndex(list, index -1, endIndex + 1);
+
+            return this.nameByIndex(list, index - 1, endIndex + 1);
+
         }
         return list.substring(startIndex, endIndex);
+
     }
 
     /**
@@ -286,41 +358,49 @@ class Belfiore{
      * @generator
      * @param {string} list concatenation of names
      * @param {string|RegExp} matcher target name index
-     * @yields {number} index 
+     * @yields {number} index
      * @memberof Belfiore
      */
-    static* indexByName(list, matcher) {
+    static *indexByName (list, matcher) {
+
         if (typeof matcher === 'string') {
-            matcher = new RegExp(matcher, 'i');
+
+            matcher = new RegExp(matcher, 'iu');
+
         }
-        const seekEntryEndIndex = index => (list.indexOf('|', index +1) + 1) || list.length;
-        
-        for(let startIndex = 0, entryIndex = 0; startIndex < list.length; entryIndex++) {
-            const endIndex = seekEntryEndIndex(startIndex);
-            const targetName = list.substring(startIndex, endIndex -1);
+        const seekEntryEndIndex = (index) => list.indexOf('|', index + 1) + 1 || list.length;
+
+        for (let entryIndex = 0, startIndex = 0; startIndex < list.length; entryIndex++) {
+
+            const endIndex = seekEntryEndIndex(startIndex),
+                targetName = list.substring(startIndex, endIndex - 1);
             if (matcher.test(targetName)) {
+
                 yield entryIndex;
+
             }
             // Moving to next entry to chgeck
             startIndex = endIndex;
+
         }
         return -1;
+
     }
 
     /**
      * Retrieve location for the given index in the given subset
      * @param {string} resourceData concatenation of names
      * @param {number} index target name index
-     * @returns {Object} location 
+     * @returns {Object} location
      * @memberof Belfiore
      */
-    static locationByIndex(resourceData, index, { activeDate, codeMatcher, province, licenses } = {}) {
+    static locationByIndex (resourceData, index, {activeDate, codeMatcher, province, licenses} = {}) {
         const belfioreIndex = index * 3;
         if (resourceData.belfioreCode.length - belfioreIndex < 3) {
             return null;
         }
-        const belFioreInt = parseInt(resourceData.belfioreCode.substr(belfioreIndex, 3), '32');
-        const belfioreCode = this.belfioreFromInt(belFioreInt);
+        const belFioreInt = parseInt(resourceData.belfioreCode.substr(belfioreIndex, 3), '32'),
+            belfioreCode = this.belfioreFromInt(belFioreInt);
         if (codeMatcher && !codeMatcher.test(belfioreCode)) {
             return null;
         }
@@ -329,35 +409,37 @@ class Belfiore{
             return null;
         }
 
-        const dateIndex = index * 4;
-        const creationDate = this.decodeDate((resourceData.creationDate || '').substr(dateIndex, 4) || '0').startOf('day');
-        const expirationDate = this.decodeDate((resourceData.expirationDate || '').substr(dateIndex, 4) || '2qn13').endOf('day');
+        const dateIndex = index * 4,
+            creationDate = this.decodeDate((resourceData.creationDate || '').substr(dateIndex, 4) || '0').startOf('day'),
+            expirationDate = this.decodeDate((resourceData.expirationDate || '').substr(dateIndex, 4) || '2qn13').endOf('day');
         if (
-            activeDate && 
+            activeDate &&
             (
                 resourceData.creationDate && activeDate.isBefore(creationDate, 'day') ||
-                resourceData.expirationDate &&  activeDate.isAfter(expirationDate, 'day')
+                resourceData.expirationDate && activeDate.isAfter(expirationDate, 'day')
             )
         ) {
             return null;
         }
-        const name = this.nameByIndex(resourceData.name, index);
-        const isCountry = belfioreCode[0] === 'Z';
+        const name = this.nameByIndex(resourceData.name, index),
+            isCountry = belfioreCode[0] === 'Z',
 
-        const dataSource = licenses[parseInt(parseInt(resourceData.dataSource, 32).toString(2).padStart(resourceData.belfioreCode.length * 2/3, 0).substr(index * 2, 2), 2)];
+            dataSource = licenses[parseInt(parseInt(resourceData.dataSource, 32).toString(2).
+                padStart(resourceData.belfioreCode.length * 2 / 3, 0).
+                substr(index * 2, 2), 2)];
 
-        return Object.assign({
-            belfioreCode,
+        return {belfioreCode,
             name,
-            creationDate: creationDate.toDate(),
-            expirationDate: expirationDate.toDate(),
-            dataSource
-        }, isCountry ? {
-            iso3166: code
-        } : {
-            province: code
-        });
+            'creationDate': creationDate.toDate(),
+            'expirationDate': expirationDate.toDate(),
+            dataSource,
+            ...isCountry ? {
+                'iso3166': code
+            } : {
+                'province': code
+            }};
     }
+
 }
 
 /**
