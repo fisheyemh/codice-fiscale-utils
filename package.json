@@ -3,7 +3,6 @@
   "version": "1.0.4",
   "description": "JS utilities to handle Italian Codice Fiscale",
   "main": "dist/codice-fiscale-utils.min.js",
-  "module": "src/index.js",
   "scripts": {
     "test": "npx mocha",
     "coverage": "npx nyc --reporter=lcovonly npx mocha",
