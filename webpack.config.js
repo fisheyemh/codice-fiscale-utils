@@ -18,7 +18,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'codice-fiscale-utils.min.js',
         library: 'codiceFiscaleUtils',
-        libraryTarget: 'umd',
+        libraryTarget: 'commonjs',
         globalObject: 'typeof self !== \'undefined\' ? self : this'
     },
     externals: {
