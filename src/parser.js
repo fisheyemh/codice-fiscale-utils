@@ -25,7 +25,7 @@ class Parser {
 
     /**
      * Parse surname information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete Omocode/Regular CF to parse
      * @returns {string|null} Regular CF w/o omocodes chars
      * @public
@@ -42,7 +42,7 @@ class Parser {
 
     /**
      * Parse surname information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {string|null} Partial/possible surname
      * @public
@@ -77,7 +77,7 @@ class Parser {
 
     /**
      * Parse name information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {string|null} Partial/possible name
      * @public
@@ -91,7 +91,7 @@ class Parser {
 
     /**
      * Parse gender information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {'M'|'F'|null} Male or female
      * @public
@@ -109,7 +109,7 @@ class Parser {
 
     /**
      * Parse birth year information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {number|null} Birth Year (4 digits)
      * @public
@@ -132,7 +132,7 @@ class Parser {
 
     /**
      * Parse birth month information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {number|null} Birth Month (0...11 - Date notation)
      * @public
@@ -151,7 +151,7 @@ class Parser {
 
     /**
      * Parse birth day information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {number|null} Birth day (1..31)
      * @public
@@ -176,7 +176,7 @@ class Parser {
 
     /**
      * Parse birth date information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {Date|null} Birth Date
      * @public
@@ -206,7 +206,7 @@ class Parser {
 
     /**
      * Parse birth place information
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {Object} {name, belfioreCode} Birth place
      * @public
@@ -266,7 +266,7 @@ class Parser {
 
     /**
      * Normalize diacritics
-     * 
+     *
      * @param {string} text Input text to normalize
      * @returns {string|null} Output text w/o diacritics
      */
@@ -279,7 +279,7 @@ class Parser {
 
     /**
      * Parse surname to cf part
-     * 
+     *
      * @param {string} surname Partial or complete CF to parse
      * @returns {string|null} partial cf
      * @public
@@ -288,7 +288,7 @@ class Parser {
         if ((surname || '').trim().length < 2) {
             return null;
         }
-        
+
         const noDiacriticsSurname = this.removeDiacritics(surname);
         const consonants = (noDiacriticsSurname.match(new RegExp(`[${VALIDATOR.CONSONANT_LIST}]+`, 'ig')) || []).join('');
         const vowels = (noDiacriticsSurname.match(new RegExp(`[${VALIDATOR.VOWEL_LIST}]+`, 'ig')) || []).join('');
@@ -303,7 +303,7 @@ class Parser {
 
     /**
      * Parse name to cf part
-     * 
+     *
      * @param {string} name Partial or complete CF to parse
      * @returns {string|null} partial cf
      * @public
@@ -312,7 +312,7 @@ class Parser {
         if ((name || '').trim().length < 2) {
             return null;
         }
-        
+
         const noDiacriticsName = this.removeDiacritics(name);
         const consonants = (noDiacriticsName.match(new RegExp(`[${VALIDATOR.CONSONANT_LIST}]+`, 'ig')) || []).join('');
 
@@ -324,7 +324,7 @@ class Parser {
 
     /**
      * Parse year to cf part
-     * 
+     *
      * @param {string|number} year Birth year 2 or 4 digit string, number above 19XX or below 100
      * @returns {string|null} partial cf
      * @public
@@ -342,7 +342,7 @@ class Parser {
 
     /**
      * Parse month information
-     * 
+     *
      * @param {number} month Month number 0..11
      * @returns {string|null} Birth Month CF code
      * @public
@@ -357,7 +357,7 @@ class Parser {
 
     /**
      * Parse day information
-     * 
+     *
      * @param {number} day Day number 1..31
      * @param {Gender|string} gender Gender enum value
      * @returns {string|null} Birth Day CF code
@@ -376,7 +376,7 @@ class Parser {
 
     /**
      * Parse Year, Month, Day to Dated
-     * 
+     *
      * @param {number} year 4 digits Year
      * @param {number} [month = 0] 1 or 2 digits Month 0..11
      * @param {number} [day = 1] 1,2 digits Day 1..31
@@ -395,7 +395,7 @@ class Parser {
 
     /**
      * Parse a Dated and Gender information to create Date/Gender CF part
-     * 
+     *
      * @param {Date|Moment|string|Array<number>} date Date or Moment instance, ISO8601 date string or array of numbers [year, month, day]
      * @returns {Date|null} Parsed Date or null if not valid
      * @public
@@ -419,7 +419,7 @@ class Parser {
 
     /**
      * Parse a Dated and Gender information to create Date/Gender CF part
-     * 
+     *
      * @param {Date|Moment|string|Array<number>} date Date or Moment instance, ISO8601 date string or array of numbers [year, month, day]
      * @param {Gender|string} gender Gender enum value
      * @returns {string|null} Birth date and Gender CF code
@@ -433,7 +433,7 @@ class Parser {
         if (!parsedDate) {
             return null;
         }
-        
+
         const cfYear = this.yearToCf(parsedDate.getFullYear());
         const cfMonth = this.monthToCf(parsedDate.getMonth());
         const cfDayGender = this.dayGenderToCf(parsedDate.getDate(), gender);
@@ -443,7 +443,7 @@ class Parser {
 
     /**
      * Parse a Dated and Gender information to create Date/Gender CF part
-     * 
+     *
      * @param {Date|Moment|string|Array<number>} date Date or Moment instance, ISO8601 date string or array of numbers [year, month, day]
      * @param {string} name City or Country name
      * @param {string} [province] Province code for cities
@@ -472,7 +472,7 @@ class Parser {
 
     /**
      * Generates full CF
-     * 
+     *
      * @param {Object} input Input Object
      * @param {string} input.surname Surname
      * @param {string} input.name Name
@@ -517,4 +517,4 @@ class Parser {
     }
 }
 
-module.exports = Parser;
+export  default Parser;

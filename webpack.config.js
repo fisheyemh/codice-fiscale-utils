@@ -6,10 +6,10 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.m?js$/,
+                test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
                 use: {
-                    loader: 'babel-loader'
+                    loader: 'babel-loader',
                 }
             }
         ]
@@ -18,8 +18,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'codice-fiscale-utils.min.js',
         library: 'codiceFiscaleUtils',
-        libraryTarget: 'commonjs',
-        globalObject: 'typeof self !== \'undefined\' ? self : this'
+        libraryTarget: 'window'
     },
     externals: {
         moment: {

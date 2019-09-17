@@ -118,7 +118,7 @@ const core = {
  * @namespace Diacritics
  * @returns {Proxy}
  */
-module.exports = new Proxy({
+export  default new Proxy({
     ...core,
     validator: new Proxy({}, {
         get(receiver, name) {

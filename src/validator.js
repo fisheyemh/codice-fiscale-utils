@@ -1,11 +1,11 @@
-const CheckDigitizer = require('./checkDigitizer');
-const DATE_VALIDATOR = require('./dateValidator.const');
-const Diacritics = require('./diacritics');
-const Gender = require('./gender.enum');
-const moment = require('moment');
-const Omocode = require('./omocode.enum');
-const Parser = require('./parser');
-const VALIDATOR = require('./validator.const');
+import CheckDigitizer from './checkDigitizer';
+import DATE_VALIDATOR from './dateValidator.const';
+import Diacritics from './diacritics';
+import Gender from './gender.enum';
+import moment from 'moment';
+import Omocode from './omocode.enum';
+import Parser from './parser';
+import VALIDATOR from'./validator.const';
 
 /**
  * @namespace Validator
@@ -180,7 +180,7 @@ class Validator {
 
     /**
      * Generates full CF validator based on given optional input or generic
-     * 
+     *
      * @param {Object} input Input Object
      * @param {string} input.surname Surname
      * @param {string} input.name Name
@@ -233,7 +233,7 @@ class Validator {
 
     /**
      * Returns surname validator based on given cf or generic
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {RegExp} Generic or specific regular expression
      * @public
@@ -243,14 +243,14 @@ class Validator {
         let matcher = `${ANY_LETTER}+`;
         if (typeof codiceFiscale === 'string' && (/^[A-Z]{1,3}/iu).test(codiceFiscale)) {
             const surnameCf = codiceFiscale.substr(0,3);
-            
+
             const diacriticizer = matchingChars => (matchingChars || '').split('').map(char => `[${Diacritics.insensitiveMatcher[char]}]`);
 
             const matchFromCf = (cf, charMatcher) => diacriticizer((cf.match(new RegExp(charMatcher, 'ig')) || [])[0]);
 
             const cons = matchFromCf(surnameCf, `^[${VALIDATOR.CONSONANT_LIST}]{1,3}`);
             const vow = matchFromCf(surnameCf, `[${VALIDATOR.VOWEL_LIST}]{1,3}`);
-            
+
             const diacriticsVowelList = Diacritics.matcherBy(new RegExp(`^[${VALIDATOR.VOWEL_LIST}]$`, 'ui'));
 
             switch(cons.length) {
@@ -285,7 +285,7 @@ class Validator {
 
     /**
      * Returns name validator based on given cf or generic
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {RegExp} Generic or specific regular expression
      * @public
@@ -304,7 +304,7 @@ class Validator {
 
             const matcher = `[${diacriticsVowelList}]*${cons[0]}[${diacriticsVowelList}]*(?:[${diacriticsConsonantList}][${diacriticsVowelList}]*)?`
                 + cons.slice(1,3).join(`[${diacriticsVowelList}]*`) + `${ANY_LETTER}*`;
-            
+
             return new RegExp(`^${matcher}$`, 'iu');
         }
         return this.surname((codiceFiscale || '').substr(3,3));
@@ -312,7 +312,7 @@ class Validator {
 
     /**
      * Returns iso8601 date validator based on given cf or generic
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {RegExp} Generic or specific regular expression
      * @public
@@ -340,7 +340,7 @@ class Validator {
 
     /**
      * Returns gender validator based on given cf or generic
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {RegExp} Generic or specific regular expression
      * @public
@@ -351,11 +351,11 @@ class Validator {
         return new RegExp(`^${matcher}$`, 'u');
     }
 
-    
+
 
     /**
      * Returns place validator based on given cf or generic
-     * 
+     *
      * @param {string} codiceFiscale Partial or complete CF to parse
      * @returns {RegExp} Generic or specific regular expression
      * @public
@@ -374,7 +374,7 @@ class Validator {
 
     /**
      * Check the given cf validity by form, birth date/place and digit code
-     * 
+     *
      * @param {string} codiceFiscale Complete CF to parse
      * @returns {boolean} Generic or specific regular expression
      * @public
@@ -395,4 +395,4 @@ class Validator {
     }
 }
 
-module.exports = Validator;
+export default Validator;

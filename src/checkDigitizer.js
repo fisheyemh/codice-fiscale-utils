@@ -1,4 +1,4 @@
-const VALIDATOR = require('./validator.const');
+import VALIDATOR from './validator.const'
 
 const CONTROL_CODE_IN = {
     'A': 1,
@@ -81,4 +81,4 @@ class CheckDigitizer {
     }
 }
 
-module.exports = CheckDigitizer;
+export default CheckDigitizer;

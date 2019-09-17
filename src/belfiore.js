@@ -1,14 +1,14 @@
-const CITIES_COUNTRIES = require('./asset/cities-countries.json');
-const moment = require('moment');
+import CITIES_COUNTRIES from './asset/cities-countries.js';
+import moment from 'moment';
 
 /**
  * Handler for cities and countries Dataset
- * 
+ *
  * @namespace Belfiore
  */
 class Belfiore{
     /**
-     * 
+     *
      * @param {Object} param Static json
      * @param {Array<Array<Object>>} param.data Resource data
      * @param {Array<Array<Object>>} param.licenses License array
@@ -207,14 +207,14 @@ class Belfiore{
         }
 
         if (
-            
+
             (resource._codeMatcher || resource._province) &&
                 ['cities', 'countries'].includes(paramName)
              ||
-            
+
                 paramName === 'byProvince' &&
                 (resource._codeMatcher.test('Z000') || resource._province)
-            
+
         ) {
             return;
         }
@@ -302,7 +302,7 @@ class Belfiore{
             startIndex = endIndex + 1;
             endIndex = list.indexOf('|', startIndex + 1);
         }
-        
+
         if (index < 0 || counter > 0) {
             throw new Error(`[Belfiore.nameByIndex] Provided index ${index} is out range`);
         }
@@ -328,7 +328,7 @@ class Belfiore{
             matcher = new RegExp(matcher, 'i');
         }
         const seekEntryEndIndex = index => list.indexOf('|', index +1) + 1 || list.length;
-        
+
         for(let startIndex = 0, entryIndex = 0; startIndex < list.length; entryIndex++) {
             const endIndex = seekEntryEndIndex(startIndex);
             const targetName = list.substring(startIndex, endIndex -1);
@@ -367,7 +367,7 @@ class Belfiore{
         const creationDate = this.decodeDate((resourceData.creationDate || '').substr(dateIndex, 4) || '0').startOf('day');
         const expirationDate = this.decodeDate((resourceData.expirationDate || '').substr(dateIndex, 4) || '2qn13').endOf('day');
         if (
-            activeDate && 
+            activeDate &&
             (
                 resourceData.creationDate && activeDate.isBefore(creationDate, 'day') ||
                 resourceData.expirationDate &&  activeDate.isAfter(expirationDate, 'day')
@@ -394,4 +394,4 @@ class Belfiore{
     }
 }
 
-module.exports = new Belfiore(CITIES_COUNTRIES);
+export  default new Belfiore(CITIES_COUNTRIES);

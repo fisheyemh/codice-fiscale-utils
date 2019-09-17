@@ -27,7 +27,7 @@ const MONTHS = [
  * @property {number} S 10
  * @property {number} T 11
  */
-module.exports = Object.freeze(new Proxy(MONTHS, {
+export  default Object.freeze(new Proxy(MONTHS, {
     get(receiver, name) {
         if (typeof name  === 'string' && receiver.includes(name)) {
             return receiver.indexOf(name);

@@ -1,5 +1,5 @@
 {
-  "name": "@marketto/codice-fiscale-utils",
+  "name": "ferdy-codice-fiscale-utils",
   "version": "1.0.4",
   "description": "JS utilities to handle Italian Codice Fiscale",
   "main": "dist/codice-fiscale-utils.min.js",
@@ -31,12 +31,16 @@
   },
   "homepage": "https://github.com/Marketto/codice-fiscale-utils#readme",
   "dependencies": {
+    "core-js": "^3.2.1",
     "moment": "^2.24.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
     "babel-loader": "^8.0.6",
+    "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
     "chai-things": "^0.2.0",
     "csvtojson": "^2.0.10",
@@ -46,6 +50,7 @@
     "lodash": "^4.17.14",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
+    "regenerator-runtime": "^0.13.3",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "rimraf": "^2.6.3",
